@@ -12,8 +12,16 @@
 
 #include <raylib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Naming is important to avoid linker errors
 // raylib has a LoadOBJ
 Model LoadObj(const char *filename);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif //RLOBJ_LIBRARY_H
