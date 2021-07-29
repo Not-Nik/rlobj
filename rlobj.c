@@ -423,6 +423,10 @@ OBJMesh LoadObjMesh(OBJFile *file) {
             char *name = ReadName(&file->data);
             mat_hash = hash((unsigned char *) name);
             RL_FREE(name);
+        } else if (strncmp(file->data.data, "mtllib", 6) == 0) {
+            file->data.data += 6;
+            char *name = ReadName(&file->data);
+            RL_FREE(ReadMtl(file, name));
         }
         IgnoreLine(&file->data);
     }
@@ -499,12 +503,6 @@ Model LoadObjDry(const char *filename) {
     file.base = PutStringOnHeap(GetPrevDirectoryPath(filename));
 
     while (*file.data.data) {
-        if (strncmp(file.data.data, "mtllib", 6) == 0) {
-            file.data.data += 6;
-            char *name = ReadName(&file.data);
-            RL_FREE(ReadMtl(&file, name));
-        }
-
         meshes = (OBJMesh *) RL_REALLOC(meshes, sizeof(OBJMesh) * ++mesh_count);
         meshes[mesh_count - 1] = LoadObjMesh(&file);
     }
