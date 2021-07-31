@@ -8,6 +8,7 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 endif ()
 
 add_library(rlobj rlobj.c rlobj.h)
+target_include_directories(rlobj PUBLIC .)
 target_link_libraries(rlobj raylib)
 
 add_executable(test test.c)

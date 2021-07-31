@@ -505,13 +505,15 @@ Model LoadObjDry(const char *filename) {
     while (*file.data.data) {
         meshes = (OBJMesh *) RL_REALLOC(meshes, sizeof(OBJMesh) * ++mesh_count);
         meshes[mesh_count - 1] = LoadObjMesh(&file);
+        file.face_count = 0;
+        RL_FREE(file.faces);
+        file.faces = NULL;
     }
 
     UnloadFileText(data);
     RL_FREE(file.vertices);
     RL_FREE(file.texcoords);
     RL_FREE(file.normals);
-    RL_FREE(file.faces);
 
     Model model = {0};
 
