@@ -9,6 +9,7 @@
 
 #include "rlobj.h"
 
+#include <math.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -475,7 +476,7 @@ OBJMesh LoadObjMesh(OBJFile *file) {
 
 Color Vector3ToColor(Vector3 vec, float opacity) {
     return (Color) {
-        .r = (char) (vec.x * 255.f), .g = (char) (vec.y * 255.f), .b = (char) (vec.z * 255.f), .a = (char) (opacity * 255.f)
+        .r = (char) roundf(vec.x * 255.f), .g = (char) roundf(vec.y * 255.f), .b = (char) roundf(vec.z * 255.f), .a = (char) roundf(opacity * 255.f)
     };
 }
 
