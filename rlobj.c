@@ -487,10 +487,8 @@ Color Vector3ToColor(Vector3 vec, float opacity) {
 
 Texture LoadTextureBase(char *filename, char *base) {
     Texture res = {0};
-    if (filename) {
-        if (base) filename = AddBase(filename, base);
-        res = LoadTexture(filename);
-    }
+    if (base) filename = AddBase(filename, base);
+    res = LoadTexture(filename);
     RL_FREE(filename);
     return res;
 }
@@ -539,10 +537,12 @@ Model LoadObjDry(const char *filename) {
         m.maps[MATERIAL_MAP_ALBEDO].color = Vector3ToColor(names.diffuse, names.opacity);
         m.maps[MATERIAL_MAP_METALNESS].color = Vector3ToColor(names.specular, names.opacity);
 
-        m.maps[MATERIAL_MAP_ALBEDO].texture = LoadTextureBase(names.diffuse_map, names.base);
-        m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.specular_map, names.base);
-        m.maps[MATERIAL_MAP_OCCLUSION].texture = LoadTextureBase(names.highlight_map, names.base);
-        m.maps[MATERIAL_MAP_NORMAL].texture = LoadTextureBase(names.bump_map, names.base);
+        // If check here, to prevent replacing default textures
+        // These are used to display .color values even if no image is present
+        if (names.diffuse_map) m.maps[MATERIAL_MAP_ALBEDO].texture = LoadTextureBase(names.diffuse_map, names.base);
+        if (names.specular_map) m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.specular_map, names.base);
+        if (names.highlight_map) m.maps[MATERIAL_MAP_OCCLUSION].texture = LoadTextureBase(names.highlight_map, names.base);
+        if (names.bump_map) m.maps[MATERIAL_MAP_NORMAL].texture = LoadTextureBase(names.bump_map, names.base);
 
         // Free unused maps (used ones are freed in LoadTextureBase because of reallocates)
         RL_FREE(names.displacement_map);
