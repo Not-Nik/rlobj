@@ -53,6 +53,8 @@ typedef struct OBJFile {
     int normal_count;
     int face_count;
 
+    bool triangulation_warning;
+
     OBJMat *mats;
     int mat_count;
 } OBJFile;
@@ -383,7 +385,10 @@ void ReadFace(OBJFile *file) {
 
     // Naïve triangulation
     while (isdigit(*file->data.data)) {
-        TraceLog(LOG_WARNING, "Triangulation is only very basic. Try doing that in your modeling software.");
+        if (!file->triangulation_warning) {
+            TraceLog(LOG_WARNING, "MESH: Triangulation is only very basic. Try doing that in your modeling software.");
+            file->triangulation_warning = true;
+        }
         file->faces = (Face *) RL_REALLOC(file->faces, sizeof(Face) * ++file->face_count);
         f.edges[1] = f.edges[2];
 
