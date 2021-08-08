@@ -573,7 +573,7 @@ Model LoadObjDry(const char *filename) {
         //  gonna be used if both are defined
         if (names.reflection_map) m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.reflection_map, names.base);
         if (names.specular_map) {
-            if (rlGetTextureDefault().id != m.maps[MATERIAL_MAP_METALNESS].texture.id)
+            if (rlGetTextureIdDefault() != m.maps[MATERIAL_MAP_METALNESS].texture.id)
                 UnloadTexture(m.maps[MATERIAL_MAP_METALNESS].texture);
             m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.specular_map, names.base);
         }
