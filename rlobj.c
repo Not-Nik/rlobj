@@ -9,6 +9,7 @@
 
 #include "rlobj.h"
 
+#include <rlgl.h>
 #include <math.h>
 #include <ctype.h>
 #include <string.h>
@@ -27,7 +28,7 @@ typedef struct OBJMat {
 
     Vector3 ambient, diffuse, specular;
     float opacity;
-    char *ambient_map, *diffuse_map, *specular_map, *highlight_map, *alpha_map, *bump_map, *displacement_map, *decal_map;
+    char *ambient_map, *diffuse_map, *specular_map, *highlight_map, *alpha_map, *bump_map, *displacement_map, *decal_map, *reflection_map;
     unsigned long name_hash;
 } OBJMat;
 
@@ -264,6 +265,9 @@ OBJMat LoadMtlMat(GenericFile *file) {
         } else if (strncmp(file->data, "decal", 5) == 0) {
             file->data += 5;
             mat.decal_map = ReadName(file);
+        } else if (strncmp(file->data, "refl", 4) == 0) {
+            file->data += 4;
+            mat.reflection_map = ReadName(file);
         }
         IgnoreLine(file);
     }
@@ -404,10 +408,10 @@ void ReadFace(OBJFile *file) {
 
 void ReverseArray(float *array, int size) {
     float *temp = (float *) RL_CALLOC(size, sizeof(float));
-    for (int i = 0; i < size; i+=3) {
+    for (int i = 0; i < size; i += 3) {
         temp[size - i - 3] = array[i];
-        temp[size - i - 2] = array[i+1];
-        temp[size - i - 1] = array[i+2];
+        temp[size - i - 2] = array[i + 1];
+        temp[size - i - 1] = array[i + 2];
     }
     for (int i = 0; i < size; i++) {
         array[i] = temp[i];
@@ -417,9 +421,9 @@ void ReverseArray(float *array, int size) {
 
 void ReverseArray2(float *array, int size) {
     float *temp = (float *) RL_CALLOC(size, sizeof(float));
-    for (int i = 0; i < size; i+=2) {
+    for (int i = 0; i < size; i += 2) {
         temp[size - i - 2] = array[i];
-        temp[size - i - 1] = array[i+1];
+        temp[size - i - 1] = array[i + 1];
     }
     for (int i = 0; i < size; i++) {
         array[i] = temp[i];
@@ -565,8 +569,16 @@ Model LoadObjDry(const char *filename) {
         // If check here, to prevent replacing default textures
         // These are used to display .color values even if no image is present
         if (names.diffuse_map) m.maps[MATERIAL_MAP_ALBEDO].texture = LoadTextureBase(names.diffuse_map, names.base);
-        if (names.specular_map) m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.specular_map, names.base);
-        if (names.highlight_map) m.maps[MATERIAL_MAP_OCCLUSION].texture = LoadTextureBase(names.highlight_map, names.base);
+        // NOTE: I'm not totally sure which one is right, but for raylib specular is the same as metalness so that's what's
+        //  gonna be used if both are defined
+        if (names.reflection_map) m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.reflection_map, names.base);
+        if (names.specular_map) {
+            if (rlGetTextureDefault().id != m.maps[MATERIAL_MAP_METALNESS].texture.id)
+                UnloadTexture(m.maps[MATERIAL_MAP_METALNESS].texture);
+            m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.specular_map, names.base);
+        }
+
+        if (names.highlight_map) m.maps[MATERIAL_MAP_ROUGHNESS].texture = LoadTextureBase(names.highlight_map, names.base);
         if (names.bump_map) m.maps[MATERIAL_MAP_NORMAL].texture = LoadTextureBase(names.bump_map, names.base);
 
         // Free unused maps (used ones are freed in LoadTextureBase because of reallocates)
