@@ -252,7 +252,7 @@ OBJMat LoadMtlMat(GenericFile *file) {
             } else if (strncmp(file->data, "Ns", 2) == 0) {
                 file->data += 2;
                 mat.highlight_map = ReadName(file);
-            } else if (strncmp(file->data, "bump", 4) == 0) {
+            } else if (strncmp(file->data, "bump", 4) == 0 || strncmp(file->data, "Bump", 4) == 0) { // Somewhat bad practice, but acceptable for now
                 file->data += 4;
                 mat.bump_map = ReadName(file);
             }
