@@ -238,35 +238,45 @@ OBJMat LoadMtlMat(GenericFile *file) {
                 file->data++;
                 if (*file->data == 'a') {
                     file->data++;
+                    RL_FREE(mat.ambient_map);
                     mat.ambient_map = ReadName(file);
                 } else if (*file->data == 'd') {
                     file->data++;
+                    RL_FREE(mat.diffuse_map);
                     mat.diffuse_map = ReadName(file);
                 } else if (*file->data == 's') {
                     file->data++;
+                    RL_FREE(mat.specular_map);
                     mat.specular_map = ReadName(file);
                 }
             } else if (*file->data == 'd') {
                 file->data++;
+                RL_FREE(mat.alpha_map);
                 mat.alpha_map = ReadName(file);
             } else if (strncmp(file->data, "Ns", 2) == 0) {
                 file->data += 2;
+                RL_FREE(mat.highlight_map);
                 mat.highlight_map = ReadName(file);
             } else if (strncmp(file->data, "bump", 4) == 0 || strncmp(file->data, "Bump", 4) == 0) { // Somewhat bad practice, but acceptable for now
                 file->data += 4;
+                RL_FREE(mat.bump_map);
                 mat.bump_map = ReadName(file);
             }
         } else if (strncmp(file->data, "bump", 4) == 0) {
             file->data += 4;
+            RL_FREE(mat.bump_map);
             mat.bump_map = ReadName(file);
         } else if (strncmp(file->data, "disp", 4) == 0) {
             file->data += 4;
+            RL_FREE(mat.displacement_map);
             mat.displacement_map = ReadName(file);
         } else if (strncmp(file->data, "decal", 5) == 0) {
             file->data += 5;
+            RL_FREE(mat.decal_map);
             mat.decal_map = ReadName(file);
         } else if (strncmp(file->data, "refl", 4) == 0) {
             file->data += 4;
+            RL_FREE(mat.reflection_map);
             mat.reflection_map = ReadName(file);
         }
         IgnoreLine(file);
