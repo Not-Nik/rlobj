@@ -569,23 +569,32 @@ Model LoadObjDry(const char *filename) {
         // If check here, to prevent replacing default textures
         // These are used to display .color values even if no image is present
         if (names.diffuse_map) m.maps[MATERIAL_MAP_ALBEDO].texture = LoadTextureBase(names.diffuse_map, names.base);
+        else
+            RL_FREE(names.diffuse_map);
         // NOTE: I'm not totally sure which one is right, but for raylib specular is the same as metalness so that's what's
         //  gonna be used if both are defined
         if (names.reflection_map) m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.reflection_map, names.base);
+        else
+            RL_FREE(names.reflection_map);
         if (names.specular_map) {
             if (rlGetTextureIdDefault() != m.maps[MATERIAL_MAP_METALNESS].texture.id)
                 UnloadTexture(m.maps[MATERIAL_MAP_METALNESS].texture);
             m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.specular_map, names.base);
-        }
+        } else
+            RL_FREE(names.specular_map);
 
         if (names.highlight_map) m.maps[MATERIAL_MAP_ROUGHNESS].texture = LoadTextureBase(names.highlight_map, names.base);
+        else
+            RL_FREE(names.highlight_map);
         if (names.bump_map) m.maps[MATERIAL_MAP_NORMAL].texture = LoadTextureBase(names.bump_map, names.base);
+        else
+            RL_FREE(names.bump_map);
 
         // Free unused maps (used ones are freed in LoadTextureBase because of reallocates)
-        RL_FREE(names.displacement_map);
-        RL_FREE(names.ambient_map);
         RL_FREE(names.alpha_map);
+        RL_FREE(names.ambient_map);
         RL_FREE(names.decal_map);
+        RL_FREE(names.displacement_map);
 
         model.materials[i] = m;
     }
