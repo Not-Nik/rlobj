@@ -416,31 +416,6 @@ void ReadFace(OBJFile *file) {
     }
 }
 
-void ReverseArray(float *array, int size) {
-    float *temp = (float *) RL_CALLOC(size, sizeof(float));
-    for (int i = 0; i < size; i += 3) {
-        temp[size - i - 3] = array[i];
-        temp[size - i - 2] = array[i + 1];
-        temp[size - i - 1] = array[i + 2];
-    }
-    for (int i = 0; i < size; i++) {
-        array[i] = temp[i];
-    }
-    RL_FREE(temp);
-}
-
-void ReverseArray2(float *array, int size) {
-    float *temp = (float *) RL_CALLOC(size, sizeof(float));
-    for (int i = 0; i < size; i += 2) {
-        temp[size - i - 2] = array[i];
-        temp[size - i - 1] = array[i + 1];
-    }
-    for (int i = 0; i < size; i++) {
-        array[i] = temp[i];
-    }
-    RL_FREE(temp);
-}
-
 OBJMesh LoadObjMesh(OBJFile *file) {
     unsigned long mat_hash;
     bool seen_o = false;
