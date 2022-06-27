@@ -79,6 +79,8 @@ char *PutStringOnHeap(const char *string) {
 }
 
 char *AddBase(char *path, const char *base) {
+    if (path[0] == '/') return path;
+
     size_t path_len = strlen(path), base_len = strlen(base);
     path = RL_REALLOC(path, sizeof(char) * (path_len + base_len + 2));
     memmove(path + base_len + 1, path, path_len + 1);
