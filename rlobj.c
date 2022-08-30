@@ -293,7 +293,7 @@ char *ReadMtl(OBJFile *file, char *filename) {
     if (!data) { return filename; }
 
     GenericFile mtl = (GenericFile) {.data = data};
-    char *base = GetPrevDirectoryPath(filename);
+    const char *base = GetPrevDirectoryPath(filename);
 
     while (*mtl.data) {
         file->mats = (OBJMat *) RL_REALLOC(file->mats, sizeof(OBJMat) * ++file->mat_count);
@@ -351,7 +351,7 @@ void ReadNormal(OBJFile *file) {
     file->normals[nc].z = nZ.f;
 }
 
-#define InvalidEdge (ValidEdge){{}, false}
+#define InvalidEdge (ValidEdge){(Edge){0,0,0}, false}
 
 ValidEdge ReadEdge(GenericFile *file) {
     Edge e = {0};
@@ -502,7 +502,7 @@ Color Vector3ToColor(Vector3 vec, float opacity) {
 }
 
 Texture LoadTextureBase(char *filename, char *base) {
-    Texture res = {0};
+    Texture res;
     if (base) filename = AddBase(filename, base);
     res = LoadTexture(filename);
     RL_FREE(filename);
@@ -553,13 +553,13 @@ Model LoadObjDry(const char *filename) {
         m.maps[MATERIAL_MAP_ALBEDO].color = Vector3ToColor(names.diffuse, names.opacity);
         m.maps[MATERIAL_MAP_METALNESS].color = Vector3ToColor(names.specular, names.opacity);
 
-        // If check here, to prevent replacing default textures
+        // if-check here, to prevent replacing default textures
         // These are used to display .color values even if no image is present
         if (names.diffuse_map) m.maps[MATERIAL_MAP_ALBEDO].texture = LoadTextureBase(names.diffuse_map, names.base);
         else
             RL_FREE(names.diffuse_map);
-        // NOTE: I'm not totally sure which one is right, but for raylib specular is the same as metalness so that's what's
-        //  gonna be used if both are defined
+        // NOTE: I'm not totally sure which one is right, but for raylib specular is the same as "metalness" so that's what
+        //  we are using if both are defined
         if (names.reflection_map) m.maps[MATERIAL_MAP_METALNESS].texture = LoadTextureBase(names.reflection_map, names.base);
         else
             RL_FREE(names.reflection_map);
